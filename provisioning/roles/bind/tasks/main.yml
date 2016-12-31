@@ -1,0 +1,41 @@
+---
+# This playbook contains plays that will be run on all nodes that will provide DNS Nameserver services.
+
+- name: install bind packages
+  apt: pkg={{ item }} state=present
+  with_items:
+   - bind9
+   - dnsutils
+
+- name: setup domain zone file
+  template:
+    src: db.{{ domain_name|lower() }}.j2
+    dest: /etc/bind/db.{{ domain_name|lower() }}
+    mode: 0644
+  notify: reload bind
+
+- name: setup ptr zone file
+  template:
+    src: db.101.168.192.j2
+    dest: /etc/bind/db.101.168.192
+    mode: 0644
+  notify: reload bind
+
+- name: create zones
+  blockinfile:
+    dest: /etc/bind/named.conf.local
+    block: |
+      zone "{{ domain_name }}" IN {
+        type master;
+        file "/etc/bind/db.{{ domain_name|lower() }}";
+        allow-update { none; };
+      };
+      zone "101.168.192.in-addr.arpa" IN {
+        type master;
+        file "/etc/bind/db.101.168.192";
+        allow-update { none; };
+      };
+  notify: reload bind
+
+- name: start/stop bind service
+  service: name=bind9 state=started enabled=yes

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jive>
+  <adminConsole>
+    <port>9090</port>
+    <securePort>9091</securePort>
+  </adminConsole>
+  <locale>en</locale>
+  <stream>
+    <management>
+      <active>true</active>
+      <requestFrequency>5</requestFrequency>
+    </management>
+  </stream>
+  <connectionProvider>
+    <className>org.jivesoftware.database.EmbeddedConnectionProvider</className>
+  </connectionProvider>
+  <setup>true</setup>
+  <xmpp>
+    <domain>{{ domain_name|lower() }}</domain>
+    <fqdn>{{ ansible_hostname }}.{{ domain_name|lower() }}</fqdn>
+  </xmpp>
+</jive>
+
+

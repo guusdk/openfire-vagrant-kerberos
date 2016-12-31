@@ -1,0 +1,8 @@
+---
+# Handle notifications. Handlers are called by other plays.
+
+- name: restart kdc
+  service: 
+    name: krb5-kdc
+    state: restarted
+  become: true

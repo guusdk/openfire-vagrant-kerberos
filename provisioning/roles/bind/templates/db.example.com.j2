@@ -1,0 +1,20 @@
+$TTL 86400
+@                                            IN      SOA     {{ ansible_hostname|lower() }}.{{ domain_name|lower() }}. hostmaster.{{ domain_name|lower() }}. (
+    2016123006    ; Serial
+    1d            ; slave refresh
+    2h            ; slave retry time in case of a problem
+    2w            ; slave expiration time
+    2d            ; minimum caching time in case of failed lookups
+)
+ 
+                                             IN      NS      bind01.{{ domain_name }}.
+
+kdc01                                        IN      A       192.168.101.2
+bind01                                       IN      A       192.168.101.3
+openfire01                                   IN      A       192.168.101.4
+
+_xmpp-client._tcp.{{ domain_name|lower() }}. IN      SRV     0 5 5222 openfire01.{{ domain_name|lower() }}.
+_xmpp-server._tcp.{{ domain_name|lower() }}. IN      SRV     0 5 5269 openfire01.{{ domain_name|lower() }}.
+_kerberos._udp.{{ domain_name|lower() }}.    IN      SRV     0 0 88 kdc01.{{ domain_name|lower() }}.
+
+_kerberos.{{ domain_name|lower() }}.         IN      TXT     "{{ domain_name|upper() }}"

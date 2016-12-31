@@ -1,0 +1,8 @@
+[kdc]
+kdc01
+
+[dns]
+bind01
+
+[xmpp]
+openfire01

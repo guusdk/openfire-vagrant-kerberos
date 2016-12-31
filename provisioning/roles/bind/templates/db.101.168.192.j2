@@ -1,0 +1,14 @@
+$TTL 86400
+@                                            IN      SOA     {{ ansible_hostname|lower() }}.{{ domain_name|lower() }}. hostmaster.{{ domain_name|lower() }}. (
+    2016123006    ; Serial
+    1d            ; slave refresh
+    2h            ; slave retry time in case of a problem
+    2w            ; slave expiration time
+    2d            ; minimum caching time in case of failed lookups
+)
+ 
+                                             IN      NS      bind01.{{ domain_name }}.
+
+2                                            IN      PTR     kdc01.{{ domain_name|lower() }}.
+3                                            IN      PTR     {{ ansible_hostname|lower() }}.{{ domain_name|lower() }}.
+4                                            IN      PTR     openfire01.{{ domain_name|lower() }}.

@@ -1,0 +1,8 @@
+---
+# Handle notifications. Handlers are called by other plays.
+
+- name: restart bind
+  service: name=bind9 state=restarted
+
+- name: reload bind
+  service: name=bind9 state=reloaded

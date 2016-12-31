@@ -1,0 +1,5 @@
+---
+# Handle notifications. Handlers are called by other plays.
+
+- name: restart openfire
+  service: name=openfire state=restarted

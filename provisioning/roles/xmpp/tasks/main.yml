@@ -1,0 +1,23 @@
+---
+- name: Install Java
+  apt: 
+    update_cache: yes
+    cache_valid_time: 3600
+    pkg: openjdk-8-jdk-headless
+    state: present
+
+- name: Install Openfire
+  apt: 
+    update_cache: yes
+    cache_valid_time: 3600
+    deb: http://bamboo.igniterealtime.org/artifact/OPENFIRE-NIGHTLYDEB6/shared/build-11/Project-Debian-distribution-files/openfire_4.1.1_all.deb
+    state: present
+
+- name: Configure Openfire
+  template:
+    src: openfire.xml.j2
+    dest: /etc/openfire/openfire.xml
+    owner: openfire
+    group: openfire
+    mode: 0644
+  notify: restart openfire

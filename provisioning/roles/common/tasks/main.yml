@@ -1,0 +1,77 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- name: Ensure download directory exists.
+  file:
+    path: "{{ download_directory }}"
+    state: directory
+    mode: 0777
+  become: true
+
+- name: Install bzip2
+  apt: name=bzip2 state=present
+  tags: compression
+  become: true
+  
+- name: Install ntp
+  apt: name=ntp state=present
+  tags: ntp
+  become: true
+
+- name: Configure ntp file
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  tags: ntp
+  notify: restart ntp
+  become: true
+
+- name: Start the ntp service
+  service: name=ntp state=started enabled=yes
+  tags: ntp
+  become: true
+
+# TODO figure out what is the best way to override DNS that pours in from DHCP. We want host bind01 to be used as a nameserver for our domain.
+
+# - name: Configure bind01 to be the nameserver to be used
+#   lineinfile:
+#     dest: /etc/network/interfaces
+#     line: dns-search example.com
+#     owner: root
+#     group: root
+#     mode: 0644
+#   become: true
+
+# - name: Configure bind01 to be the nameserver to be used
+#   lineinfile:
+#     dest: /etc/network/interfaces
+#     line: dns-nameservers 192.168.101.3
+#     owner: root
+#     group: root
+#     mode: 0644
+#   become: true
+
+- name: Prepend resolv.conf with bind03 IP
+  lineinfile:
+    dest: /etc/resolvconf/resolv.conf.d/head
+    line: nameserver 192.168.101.3
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+
+- name: Prepend resolv.conf with our domain
+  lineinfile:
+    dest: /etc/resolvconf/resolv.conf.d/head
+    line: search {{ domain_name }}
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+
+- name: Configure bind01 to be the nameserver to be used
+  lineinfile:
+    dest: /etc/dhcp/dhclient.conf
+    line: prepend domain-name-servers 192.168.101.3;
+    owner: root
+    group: root
+    mode: 0644
+  become: true

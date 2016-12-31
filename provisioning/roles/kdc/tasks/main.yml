@@ -1,0 +1,55 @@
+---
+# This playbook contains plays that will be run on the KDC nodes.
+
+- name: Install Kerberos (server-sided) packages
+  apt: 
+    package: "{{ item }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  with_items:
+    - krb5-kdc
+    - krb5-admin-server
+  register: install
+
+- name: Copy the kdc configuration file 
+  template:
+    src: kdc.conf.j2
+    dest: /etc/krb5kdc/kdc.conf
+  notify: restart kdc
+
+- name: Copy the kdc acl configuration file 
+  template:
+    src: kadm5.acl.j2
+    dest: /etc/krb5kdc/kadm5.acl
+  notify: restart kdc
+
+- name: Copy the client configuration file 
+  template: 
+    src: krb5.conf.j2
+    dest: /etc/krb5.conf
+  notify: restart kdc
+
+- name: Create the initial kerberos database
+  script: create_db.sh {{ master_db_pass }} 
+  when: install.changed
+
+- lineinfile:
+    dest: /etc/hosts
+    line: "{{ ansible_default_ipv4.address }} {{ ansible_hostname }} {{ ansible_hostname + '.' + domain_name|lower() }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Start the kerberos services 
+  service: 
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with-items:
+    - krb5-kdc
+    - krb5-admin-server
+
+- name: Create an admin for the administering the kerberos database
+  script: create_admin.sh {{ kadmin_pass }} {{ kadmin_user }} 
+  when: install.changed

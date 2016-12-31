@@ -1,0 +1,7 @@
+---
+# Variables listed here are applicable to the kdc host group
+
+kdc_port: 88
+master_db_pass: 6sbsS2ba
+kadmin_pass: 73kFsg3q
+kadmin_user: kdcadmin

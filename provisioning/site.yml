@@ -1,0 +1,31 @@
+---
+# This playbook deploys the whole application stack in this site.
+
+- name: Apply common configuration to all nodes
+  hosts: all
+  roles:
+    - common
+
+- name: Configure and deploy the DNS infrastructure.
+  hosts: dns
+  roles:
+    - bind
+  become: true
+
+- name: Configure and deploy the Kerberos Key Distribution Center instances.
+  hosts: kdc
+  roles:
+    - kdc
+  become: true
+
+- name: Configure and deploy the Openfire XMPP server instances.
+  hosts: xmpp
+  roles:
+    - xmpp
+  become: true
+
+# - name: Configure Java servlet engine
+#   hosts: appserver
+#   roles:
+#     - appserver
+
